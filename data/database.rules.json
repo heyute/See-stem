@@ -1,0 +1,32 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "ids": {
+      "$id": {
+        ".read": true,
+        ".write": "auth != null && !data.exists() && newData.val() === auth.uid",
+        ".validate": "$id.matches(/^[a-z0-9_]{4,16}$/)"
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "id": {
+          ".write": "auth != null && auth.uid === $uid && !data.exists()",
+          ".validate": "newData.isString() && root.child('ids').child(newData.val()).val() === $uid"
+        },
+        "session": {
+          ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true",
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "kv": {
+          "$k": {
+            ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true",
+            ".validate": "$k.matches(/^[A-Za-z]{1,20}$/) && newData.isString() && newData.val().length <= 2000000"
+          }
+        }
+      }
+    }
+  }
+}

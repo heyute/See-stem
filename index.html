@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>스템 생성 — 시 스템 :: 딥 다이브</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="auth" id="auth">
+ <div class="box">
+  <h1>시 스템 :: 딥 다이브</h1>
+  <div class="sub">이메일로 가입하고 인증해요. 이메일은 로그인과 비밀번호 찾기에만 쓰고, 다른 사람에게는 아이디만 보여요.</div>
+  <div id="authMain">
+  <div class="tabs" role="tablist"><button role="tab" id="tabIn" aria-selected="true">로그인</button><button role="tab" id="tabUp" aria-selected="false">회원가입</button></div>
+  <form id="authForm" novalidate>
+   <label class="fld"><span>이메일</span><input type="email" id="uem" autocomplete="email" maxlength="120" spellcheck="false" autocapitalize="off"><small id="uemHint"></small></label>
+   <label class="fld" id="uidWrap" hidden><span>아이디 <small class="sub">(게임 안에서 보이는 이름, 바꿀 수 없어요)</small></span><input type="text" id="uid" autocomplete="username" maxlength="16" spellcheck="false" autocapitalize="off"><small id="uidHint"></small></label>
+   <label class="fld"><span>비밀번호</span><input type="password" id="upw" autocomplete="current-password" maxlength="64"><small id="upwHint"></small></label>
+   <label class="fld" id="pw2Wrap" hidden><span>비밀번호 확인</span><input type="password" id="upw2" autocomplete="new-password" maxlength="64"><small id="upw2Hint"></small></label>
+   <div class="autherr" id="authErr" role="alert"></div>
+   <button class="go" id="authGo" type="submit">로그인</button>
+  </form>
+  <div class="hint" id="authNote" style="margin-top:14px"><button type="button" class="linkbtn" id="forgotPw">비밀번호를 잊었어요</button></div>
+  </div>
+  <div id="verifyBox" hidden>
+   <h2 style="margin:14px 0 6px">이메일 인증</h2>
+   <p class="hint"><b id="vMail"></b>(으)로 인증 메일을 보냈어요. 메일의 링크를 누른 뒤 <b>인증했어요</b>를 눌러 주세요. 메일이 안 보이면 스팸함도 확인해 주세요.</p>
+   <div class="autherr" id="vErr" role="alert"></div>
+   <button class="go" id="vCheck" type="button" style="width:100%">인증했어요</button>
+   <div class="row" style="justify-content:space-between;margin-top:10px"><button type="button" class="linkbtn" id="vResend">메일 다시 보내기</button><button type="button" class="linkbtn" id="vOut">다른 계정으로 로그인</button></div>
+  </div>
+  <div id="idBox" hidden>
+   <h2 style="margin:14px 0 6px">아이디 정하기</h2>
+   <p class="hint">게임 안에서 보이는 아이디를 정해 주세요. 영문 소문자·숫자·밑줄(_) 4~16자이고, 나중에 바꿀 수 없어요.</p>
+   <label class="fld"><span>아이디</span><input type="text" id="uid2" maxlength="16" spellcheck="false" autocapitalize="off"></label>
+   <div class="autherr" id="idErr" role="alert"></div>
+   <button class="go" id="idGo" type="button" style="width:100%">이 아이디로 시작</button>
+  </div>
+ </div>
+</div>
+<div class="wrap" id="app" hidden>
+  <div class="top">
+    <div><h1>스템 생성</h1><div class="sub">계정마다 스템은 1명이에요. 종족 → 혈통·특성 → 별자리 → 기술 → 이름 순서로 정해요.</div></div>
+    <div class="row"><span class="who" id="who"></span><button class="ghost" id="reset">처음부터</button><button class="ghost" id="logout">로그아웃</button></div>
+  </div>
+  <div class="grid">
+    <div id="steps"></div>
+    <div class="sheet"><div class="card" id="sheet"></div></div>
+  </div>
+</div>
+<div class="wrap" id="lobby" hidden>
+  <div class="top">
+    <div><h1>시 스템 :: 딥 다이브</h1><div class="sub">로비</div></div>
+    <div class="row"><span class="who" id="who2"></span><button class="ghost" id="logout2">로그아웃</button></div>
+  </div>
+  <main id="lmain"></main>
+</div>
+<div class="wrap" id="shop" hidden>
+  <div class="top">
+    <div><button class="ghost back" data-back>← 로비</button><h1>상점</h1><div class="sub">시 스템 :: 딥 다이브</div></div>
+    <div class="row"><span class="wallet">보유 골드 <b id="wallet">0</b></span></div>
+  </div>
+  <div class="card">
+    <div class="toolbar">
+      <div class="cats" id="shopCats" role="tablist"></div>
+      <div class="row"><input type="search" id="shopQ" placeholder="상품 이름 검색" aria-label="상품 검색">
+      <select id="shopSort" aria-label="정렬"><option value="base">기본순</option><option value="low">가격 낮은 순</option><option value="high">가격 높은 순</option><option value="name">이름순</option></select></div>
+    </div>
+    <div id="shopList"></div>
+  </div>
+  <label class="sub demo" hidden><input type="checkbox" id="shopDemo"></label>
+</div>
+<div class="wrap" id="achv" hidden>
+  <div class="top">
+    <div><button class="ghost back" data-back>← 로비</button><h1>업적</h1><div class="sub">서버에서 업적을 달성한 스템들이 기록돼요.</div></div>
+    <div class="row"><span class="wallet" id="achvSum"></span></div>
+  </div>
+  <div class="card">
+    <div class="toolbar">
+      <div class="cats" id="achvCats" role="tablist"></div>
+      <div class="row"><select id="achvSort" aria-label="정렬"><option value="base">기본순</option><option value="rare">달성자 적은 순</option><option value="many">달성자 많은 순</option><option value="recent">최근 달성 순</option></select></div>
+    </div>
+    <div id="achvList"></div>
+  </div>
+  <label class="sub demo"><input type="checkbox" id="achvDemo"> 예시 업적으로 화면 미리보기</label>
+</div>
+<div class="wrap" id="db" hidden>
+  <div class="top">
+    <div><button class="ghost back" data-back>← 로비</button><h1>스킬 리스트</h1><div class="sub">모든 별자리·종족 기술과 유물을 찾아볼 수 있어요.</div></div>
+  </div>
+  <div class="card">
+    <div class="toolbar"><div class="cats" id="dbGrp" role="tablist"></div>
+     <div class="row"><input type="search" id="dbQ" placeholder="이름·효과 검색" aria-label="기술 검색"><select id="dbTurn" aria-label="사용 시점"></select></div></div>
+    <div id="dbList"></div>
+  </div>
+</div>
+<div class="wrap" id="explore" hidden>
+  <div class="top">
+    <div><button class="ghost back" data-back>← 로비</button><h1>탐사</h1><div class="sub">게임을 꺼도 스템은 계속 내려가요. 다시 들어오면 그동안의 결과를 한꺼번에 계산해요.</div></div>
+  </div>
+  <div id="exBody"></div>
+</div>
+<div class="wrap" id="raid" hidden>
+  <div class="top">
+    <div><button class="ghost back" data-back>← 로비</button><h1>레이드</h1><div class="sub">공개 방을 만들거나 다른 스템의 방에 들어가요. 방장이 보스 소환 주문서 1장을 써서 시작해요.</div></div>
+  </div>
+  <div id="raidBody"></div>
+</div>
+<div id="battle" hidden>
+  <div class="bbar"><button class="ghost mini" id="bBack">레이드 나가기</button><b id="bTitle"></b><span class="sub" id="bInfo"></span><button class="ghost mini" id="bChatT" type="button" aria-controls="bChat">채팅 접기</button></div>
+  <div class="bmain"><iframe id="bFrame" title="레이드 전투"></iframe><aside class="bchat" id="bChat" aria-label="파티 채팅"></aside></div>
+  <div class="enter" id="bEnter" hidden><div class="enter-in"><div class="sub" id="eSub"></div><div class="disp" id="eBoss"></div><div class="eparty" id="eParty"></div><div class="sub">전장에 들어가는 중…</div></div></div>
+</div>
+<div class="wrap" id="mail" hidden>
+  <div class="top">
+    <div><button class="ghost back" data-back>← 로비</button><h1>우편</h1><div class="sub">GM이나 다른 스템이 보낸 아이템·골드가 여기로 와요. [받기]를 누르면 창고와 지갑으로 들어가요.</div></div>
+  </div>
+  <div id="mailBody"></div>
+</div>
+<div class="dmwin" id="dmwin" hidden role="dialog" aria-label="1대1 대화">
+  <div class="dmh"><div><b id="dmName"></b><div class="sub" id="dmSub"></div></div><div class="row"><button class="ghost mini" id="dmFriend"></button><button class="ghost mini flagbtn" id="dmReport" title="신고하기" aria-label="신고하기">신고</button><button class="ghost mini" id="dmClose" aria-label="닫기">✕</button></div></div>
+  <div class="dmlog" id="dmLog"></div>
+  <form class="chatin" id="dmForm"><input type="text" id="dmIn" maxlength="300" placeholder="메시지 입력" aria-label="1대1 메시지"><button class="go mini">보내기</button></form>
+</div>
+<div class="umenu" id="umenu" hidden role="menu"></div>
+<div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTitleH" id="mbox"></div></div>
+<div class="toast" id="toast"></div>
+<script src="js/explore.js"></script>
+<script src="data/skills.js"></script>
+<script src="js/core.js"></script>
+<script src="js/creator.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/lobby.js"></script>
+<script src="js/shop.js"></script>
+<script src="js/achv.js"></script>
+<script src="js/skilldb.js"></script>
+<script src="js/social.js"></script>
+<script src="js/explore-ui.js"></script>
+<script src="js/season.js"></script>
+<script src="js/raid-room.js"></script>
+<script src="js/raid-chat.js"></script>
+<script src="js/mail.js"></script>
+<script src="js/misc.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
